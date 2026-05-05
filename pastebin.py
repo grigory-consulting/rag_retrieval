@@ -133,3 +133,19 @@ total_rel = sum(1 for r in gold.values() if r >= 1)
 print(f'|R_q| (relevante Docs gesamt): {total_rel}')
 print(f'Recall@10  BM25 : {r10_bm25:.3f}')
 print(f'Recall@10  Dense: {r10_dense:.3f}')
+
+
+def dcg(rels: list[int], k: int) -> float:
+    return sum((2**r - 1) / math.log2(i + 2) for i, r in enumerate(rels[:k]))
+
+def ndcg_at_k(run: dict, qid: str, gold: dict, k: int) -> float:
+    top = [d for d, _ in sorted(run[qid].items(), key=lambda x: -x[1])[:k]]
+    retrieved_rels = [gold.get(d, 0) for d in top]
+    ideal_rels = sorted(gold.values(), reverse=True)
+    idcg = dcg(ideal_rels, k)
+    return dcg(retrieved_rels, k) / idcg if idcg > 0 else 0.0
+
+ndcg10_bm25  = ndcg_at_k(bm25_runs,  qid_demo, gold, 10)
+ndcg10_dense = ndcg_at_k(dense_runs, qid_demo, gold, 10)
+print(f'nDCG@10  BM25 : {ndcg10_bm25:.3f}')
+print(f'nDCG@10  Dense: {ndcg10_dense:.3f}')
