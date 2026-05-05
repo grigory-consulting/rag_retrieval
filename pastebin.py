@@ -65,3 +65,19 @@ print(f'BM25-Run: {len(bm25_runs)} Queries, je 100 Treffer.')
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 doc_embeddings = model.encode(doc_texts, batch_size=64, show_progress_bar=True, normalize_embeddings=True)
 print(f'Doc-Embeddings: shape={doc_embeddings.shape}')
+
+
+
+
+query_ids = list(queries.keys())
+query_texts = [queries[q] for q in query_ids]
+query_embeddings = model.encode(query_texts, batch_size=64, show_progress_bar=True, normalize_embeddings=True)
+
+sims = cosine_similarity(query_embeddings, doc_embeddings)  # shape: (n_queries, n_docs)
+
+dense_runs: dict[str, dict[str, float]] = {}
+for qi, qid in enumerate(query_ids):
+    top_idx = np.argsort(sims[qi])[::-1][:100]
+    dense_runs[qid] = {doc_ids[i]: float(sims[qi, i]) for i in top_idx}
+
+print(f'Dense-Run: {len(dense_runs)} Queries.')
