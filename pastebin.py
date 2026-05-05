@@ -44,3 +44,18 @@ doc_texts = [(corpus[d]['title'] + ' ' + corpus[d]['text']) for d in doc_ids]
 tokenized_corpus = [tokenize(t) for t in doc_texts]
 
 bm25 = BM25Okapi(tokenized_corpus)
+
+
+
+
+
+def bm25_topk(query: str, k: int = 10) -> list[tuple[str, float]]:
+    scores = bm25.get_scores(tokenize(query))
+    top_idx = np.argsort(scores)[::-1][:k]
+    return [(doc_ids[i], float(scores[i])) for i in top_idx]
+
+bm25_runs: dict[str, dict[str, float]] = {}
+for qid, qtext in queries.items():
+    bm25_runs[qid] = dict(bm25_topk(qtext, k=100))
+
+print(f'BM25-Run: {len(bm25_runs)} Queries, je 100 Treffer.')
