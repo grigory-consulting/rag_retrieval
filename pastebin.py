@@ -89,3 +89,18 @@ qid_demo = next(qid for qid, gold in qrels.items() if 5 <= len(gold) <= 15)
 print(f'Demo-Query [{qid_demo}]: {queries[qid_demo]!r}')
 print(f'Anzahl Gold-Labels: {len(qrels[qid_demo])}')
 print(f'Verteilung der Relevanzgrade: {pd.Series(qrels[qid_demo]).value_counts().to_dict()}')
+
+
+def show_top10(run: dict, qid: str, gold: dict[str, int]):
+    top = sorted(run[qid].items(), key=lambda x: -x[1])[:10]
+    rows = []
+    for rank, (did, score) in enumerate(top, start=1):
+        rel = gold.get(did, 0)
+        rows.append((rank, did, round(score, 3), rel, corpus[did]['title'][:60]))
+    return pd.DataFrame(rows, columns=['rank', 'docid', 'score', 'rel', 'title'])
+
+gold = qrels[qid_demo]
+print('--- BM25 Top-10 ---')
+print(show_top10(bm25_runs, qid_demo, gold).to_string(index=False))
+print('\n--- Dense Top-10 ---')
+print(show_top10(dense_runs, qid_demo, gold).to_string(index=False))
