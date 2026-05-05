@@ -59,3 +59,9 @@ for qid, qtext in queries.items():
     bm25_runs[qid] = dict(bm25_topk(qtext, k=100))
 
 print(f'BM25-Run: {len(bm25_runs)} Queries, je 100 Treffer.')
+
+
+
+model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+doc_embeddings = model.encode(doc_texts, batch_size=64, show_progress_bar=True, normalize_embeddings=True)
+print(f'Doc-Embeddings: shape={doc_embeddings.shape}')
