@@ -149,3 +149,21 @@ ndcg10_bm25  = ndcg_at_k(bm25_runs,  qid_demo, gold, 10)
 ndcg10_dense = ndcg_at_k(dense_runs, qid_demo, gold, 10)
 print(f'nDCG@10  BM25 : {ndcg10_bm25:.3f}')
 print(f'nDCG@10  Dense: {ndcg10_dense:.3f}')
+
+
+
+
+from ranx import Qrels, Run, evaluate, compare
+
+qrels_obj = Qrels(qrels)
+run_bm25  = Run(bm25_runs,  name='BM25')
+run_dense = Run(dense_runs, name='Dense')
+
+metrics = ['precision@5', 'recall@10', 'recall@100', 'ndcg@10', 'map@100', 'mrr']
+
+report_bm25  = evaluate(qrels_obj, run_bm25,  metrics=metrics)
+report_dense = evaluate(qrels_obj, run_dense, metrics=metrics)
+
+df_agg = pd.DataFrame({'BM25': report_bm25, 'Dense': report_dense}).round(3)
+df_agg['Δ (Dense − BM25)'] = (df_agg['Dense'] - df_agg['BM25']).round(3)
+df_agg
