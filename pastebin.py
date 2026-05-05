@@ -118,3 +118,18 @@ p5_bm25  = precision_at_k(bm25_runs,  qid_demo, gold, 5)
 p5_dense = precision_at_k(dense_runs, qid_demo, gold, 5)
 print(f'Precision@5  BM25 : {p5_bm25:.3f}')
 print(f'Precision@5  Dense: {p5_dense:.3f}')
+
+
+
+def recall_at_k(run: dict, qid: str, gold: dict, k: int) -> float:
+    top = [d for d, _ in sorted(run[qid].items(), key=lambda x: -x[1])[:k]]
+    hits = sum(1 for d in top if gold.get(d, 0) >= 1)
+    total = sum(1 for r in gold.values() if r >= 1)
+    return hits / total if total else 0.0
+
+r10_bm25  = recall_at_k(bm25_runs,  qid_demo, gold, 10)
+r10_dense = recall_at_k(dense_runs, qid_demo, gold, 10)
+total_rel = sum(1 for r in gold.values() if r >= 1)
+print(f'|R_q| (relevante Docs gesamt): {total_rel}')
+print(f'Recall@10  BM25 : {r10_bm25:.3f}')
+print(f'Recall@10  Dense: {r10_dense:.3f}')
