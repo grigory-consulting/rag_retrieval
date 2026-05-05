@@ -81,3 +81,11 @@ for qi, qid in enumerate(query_ids):
     dense_runs[qid] = {doc_ids[i]: float(sims[qi, i]) for i in top_idx}
 
 print(f'Dense-Run: {len(dense_runs)} Queries.')
+
+
+
+
+qid_demo = next(qid for qid, gold in qrels.items() if 5 <= len(gold) <= 15)
+print(f'Demo-Query [{qid_demo}]: {queries[qid_demo]!r}')
+print(f'Anzahl Gold-Labels: {len(qrels[qid_demo])}')
+print(f'Verteilung der Relevanzgrade: {pd.Series(qrels[qid_demo]).value_counts().to_dict()}')
