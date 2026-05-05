@@ -34,3 +34,13 @@ did = list(corpus.keys())[0]
 print(f"\nBeispiel-Query [{qid}]: {queries[qid]!r}")
 print(f"\nBeispiel-Doc   [{did}]: title={corpus[did]['title']!r}")
 print(f"Text (Auszug): {corpus[did]['text'][:200]}...")
+
+
+def tokenize(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+doc_ids = list(corpus.keys())
+doc_texts = [(corpus[d]['title'] + ' ' + corpus[d]['text']) for d in doc_ids]
+tokenized_corpus = [tokenize(t) for t in doc_texts]
+
+bm25 = BM25Okapi(tokenized_corpus)
