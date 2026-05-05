@@ -104,3 +104,17 @@ print('--- BM25 Top-10 ---')
 print(show_top10(bm25_runs, qid_demo, gold).to_string(index=False))
 print('\n--- Dense Top-10 ---')
 print(show_top10(dense_runs, qid_demo, gold).to_string(index=False))
+
+
+
+
+
+def precision_at_k(run: dict, qid: str, gold: dict, k: int) -> float:
+    top = [d for d, _ in sorted(run[qid].items(), key=lambda x: -x[1])[:k]]
+    hits = sum(1 for d in top if gold.get(d, 0) >= 1)
+    return hits / k
+
+p5_bm25  = precision_at_k(bm25_runs,  qid_demo, gold, 5)
+p5_dense = precision_at_k(dense_runs, qid_demo, gold, 5)
+print(f'Precision@5  BM25 : {p5_bm25:.3f}')
+print(f'Precision@5  Dense: {p5_dense:.3f}')
